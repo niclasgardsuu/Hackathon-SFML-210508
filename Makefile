@@ -5,7 +5,7 @@ COMPILED_FLAGS  := -pedantic -W -Wall -O3
 LINKED_FLAGS    := -s
 
 # -I"your-directory" add include directory (files .h) (HEADERS)
-INCLUDE_DIRECTORIES  := -Iinclude
+INCLUDE_DIRECTORIES  := -Iinclude -IheadersA
 
 # -L"your-directory" add lib directory (files .a .dll) (LIBRARIES)
 LIB_DIRECTORIES      := -Llib
@@ -23,4 +23,4 @@ app: $(O_FILES)
 	windres $^ -o $@ $(INCLUDE_DIRECTORIES)
 
 clean:
-	del *.o *.exe /s
+	del *.o /s

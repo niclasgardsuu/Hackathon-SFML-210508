@@ -44,7 +44,11 @@ int main()
             }
         }
 
-        car.update();
+        sf::Vector2f checkpoints[CHECKPOINT_COUNT];
+        for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+            checkpoints[i] = track.getCheckpoint(i);
+        }
+        car.update(checkpoints, track.getFinishPoint());
 
         window.draw(background);
         track.render(window);

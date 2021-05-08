@@ -3,22 +3,24 @@
 #include <cstdlib>
 #include <iostream>
 #define PI 3.14159265
-#define CHECKPOINT_COUNT 5
+#define CHECKPOINT_COUNT 4
 class Car {
     protected:
         sf::Vector2f position, velocity, acceleration;
         bool accelerating, turningRight, turningLeft, braking;
         float angle, angleVel, angleAcc, frictionFactor;
         bool checkpointsPassed[CHECKPOINT_COUNT];
+        int currentLap;
         sf::RectangleShape car; 
     public:
         Car(sf::Vector2f size, sf::Vector2f startPos) {
             car.setSize(size);
-            car.setFillColor(sf::Color::Red);
+            car.setFillColor(sf::Color::Blue);
             car.setOrigin(size.x/2,size.y/2);
             position = startPos;
             velocity = sf::Vector2f(0.f,0.f);
             acceleration = sf::Vector2f(0.1f,0.1f);
+            currentLap = 0;
             angle = PI/4;
             angleVel = 0;
             angleAcc = 0.005;
@@ -68,7 +70,7 @@ class Car {
             return sqrt(pow(vector.x,2) + pow(vector.y,2));
         }
 
-        void update() {
+        void update(sf::Vector2f checkpoints[CHECKPOINT_COUNT], sf::Vector2f finishLine) {
             if(turningRight && std::abs(angleVel) < 0.06) angleVel += angleAcc;
             if(turningLeft && std::abs(angleVel) < 0.06) angleVel -= angleAcc;
             if(accelerating && length(velocity) < 5*(1-frictionFactor)) accelerate();
@@ -79,6 +81,26 @@ class Car {
                 velocity.x *= 0.97;
                 velocity.y *= 0.97;
             }
+            for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+                if(length(position - checkpoints[i]) < 20) {
+                    checkpointsPassed[i] = true;
+                }
+            }
+            int allCheckpoints = 0;
+            for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+                allCheckpoints += !checkpointsPassed[i];
+            }
+            if(!allCheckpoints) {
+                if(length(position - finishLine) < 25) {
+                    for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+                        checkpointsPassed[i] = false;
+                    }
+                    currentLap++;
+                    std::cout << currentLap;
+                    std::cout << "\n";
+                }
+            }
+
             //TODO: minska angle om den inte ska ökas, inte sätta till 0 bara
             if(!(turningLeft ^ turningRight)) angleVel = 0;
             

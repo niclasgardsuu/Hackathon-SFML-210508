@@ -78,10 +78,14 @@ class Track {
             //Finish line, and also starting line, is always gonna be the first point in the array
             finishLine = trackPoints[0];
         }
+    
+        sf::Vector2f getCheckpoint(int index) {
+            return checkpoints[index];
+        }
 
-
-
-
+        sf::Vector2f getFinishPoint() {
+            return finishLine;
+        }
 
 
         void render(sf::RenderWindow &window) {

@@ -106,13 +106,6 @@ class EnemyCar : public CarYes {
             } else {
                 velRightoptimalAngle = optimalAngle + (2*PI - velocityAngle);
             }
-
-            std::cout << "\nsum angles: ";
-            std::cout << velRightoptimalAngle;
-            std::cout << " ";
-            std::cout << velLeftoptimalAngle;
-            std::cout << "\n";
-
             if(velRightoptimalAngle > 0.9 && velLeftoptimalAngle > 0.9 && length(velocity) > 3.5) {
                 startBrake();
                 stopAcc();

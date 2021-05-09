@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <../src/Track.cpp>
 #include <../src/Car.cpp>
+#include <../src/EnemyCar.cpp>
 #include <iostream>
 
 int main()
@@ -12,7 +13,8 @@ int main()
     background.setFillColor(sf::Color(15,125,30));
     background.setPosition(0,0);
     background.setSize(sf::Vector2f((float)window.getSize().x,(float)window.getSize().y));
-    Car car(sf::Vector2f(10,30), sf::Vector2f(750,450));
+    Car car(sf::Vector2f(10,20), sf::Vector2f(750,450));
+    EnemyCar enemy(sf::Vector2f(10,20), sf::Vector2f(200,750));
 
     while (window.isOpen())
     {
@@ -45,14 +47,20 @@ int main()
         }
 
         sf::Vector2f checkpoints[CHECKPOINT_COUNT];
+        int checkpointsIndex[CHECKPOINT_COUNT];
         for(int i = 0; i < CHECKPOINT_COUNT; i++) {
             checkpoints[i] = track.getCheckpoint(i);
+            checkpointsIndex[i] = track.getCheckpointIndex(i);
         }
+        enemy.setTarget(track.getTrackPoint(enemy.decideTargetIndex(window,checkpoints,checkpointsIndex)));
+        enemy.configureActions();
         car.update(checkpoints, track.getFinishPoint());
+        enemy.update(checkpoints, track.getFinishPoint());
 
         window.draw(background);
         track.render(window);
         car.render(window);
+        enemy.render(window);
         window.display();
     }
 

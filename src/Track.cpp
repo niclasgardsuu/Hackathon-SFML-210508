@@ -2,8 +2,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#define POINTS 100
 #define PI 3.14159265
+#define POINTS 100
 #define OFFSET_FACTOR 50
 #define CHECKPOINT_COUNT 4
 
@@ -11,6 +11,7 @@ class Track {
     private:
         sf::Vector2f trackPoints[POINTS];
         sf::Vector2f checkpoints[CHECKPOINT_COUNT];
+        int checkpointsIndex[CHECKPOINT_COUNT];
         sf::Vector2f finishLine;
     public:
         void initPoints(sf::RenderWindow &window) {
@@ -64,23 +65,47 @@ class Track {
             //The most offset point will have a checkpoint, and then 4 other checkpoints
             //are spaced evenly.
 
-            //j is used because we want to pick out one of the checkpoints lcoses to the finsih, so
-            //we remove ignore one of the items we look at but j is then decreased to still keep track
-            //of where to store the ones we actually want
-            int j = 0;
-            for(int i = 0; i < 5; i++) {
+            for(int i = 0; i < CHECKPOINT_COUNT+1; i++) {
                 int index = ((currentMostOffsetIndex+POINTS)-(POINTS/5*i))%POINTS;
                 if(index < 91 && index > 10) {
-                    checkpoints[j] = trackPoints[index];
-                    j++;
+                    std::cout << index;
+                    std::cout << "\n";
+                    if(index <= 30) {
+                        checkpointsIndex[0] = index;
+                        checkpoints[0] = trackPoints[index];
+                    }
+                    else if(index <= 50) {
+                        checkpointsIndex[1] = index;
+                        checkpoints[1] = trackPoints[index];
+                    }
+                    else if(index <= 70) {
+                        checkpointsIndex[2] = index;
+                        checkpoints[2] = trackPoints[index];
+                    }
+                    else if (index <= 90){
+                        checkpointsIndex[3] = index;
+                        checkpoints[3] = trackPoints[index];
+                    }
                 }
+            }
+            for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+                    std::cout << "\n";
+                    std::cout << checkpointsIndex[i];
+                    std::cout << "\n";
             }
             //Finish line, and also starting line, is always gonna be the first point in the array
             finishLine = trackPoints[0];
         }
     
+        sf::Vector2f getTrackPoint(int index) {
+            return trackPoints[index];
+        }
+
         sf::Vector2f getCheckpoint(int index) {
             return checkpoints[index];
+        }
+        int getCheckpointIndex(int index) {
+            return checkpointsIndex[index];
         }
 
         sf::Vector2f getFinishPoint() {

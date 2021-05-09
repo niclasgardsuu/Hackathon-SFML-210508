@@ -4,7 +4,7 @@
 #include <iostream>
 #define PI 3.14159265
 #define CHECKPOINT_COUNT 4
-class Car {
+class CarYes {
     protected:
         sf::Vector2f position, velocity, acceleration;
         bool accelerating, turningRight, turningLeft, braking;
@@ -13,7 +13,7 @@ class Car {
         int currentLap;
         sf::RectangleShape car; 
     public:
-        Car(sf::Vector2f size, sf::Vector2f startPos) {
+        CarYes(sf::Vector2f size, sf::Vector2f startPos) {
             car.setSize(size);
             car.setFillColor(sf::Color::Blue);
             car.setOrigin(size.x/2,size.y/2);
@@ -60,22 +60,33 @@ class Car {
         }
 
         void startTurning(char direction) {
-            if(direction == 'r') turningRight = true;
-            else if(direction == 'l') turningLeft = true;
+            if(direction == 'r') {
+                turningRight = true;
+                }
+            else if(direction == 'l') {
+                turningLeft = true;
+            }
         }
 
         void stopTurning(char direction) {
-            if(direction == 'r') turningRight = false;
-            else if(direction == 'l') turningLeft = false;
+            if(direction == 'r') {
+                turningRight = false;
+            }
+            else if(direction == 'l') {
+                turningLeft = false;
+            }
         }
+
 
         float length(sf::Vector2f vector) {
             return sqrt(pow(vector.x,2) + pow(vector.y,2));
         }
 
         void update(sf::Vector2f checkpoints[CHECKPOINT_COUNT], sf::Vector2f finishLine) {
-            if(turningRight && std::abs(angleVel) < 0.06) angleVel += angleAcc;
-            if(turningLeft && std::abs(angleVel) < 0.06) angleVel -= angleAcc;
+            if(angleVel < -0.06) angleVel = -0.06;
+            if(angleVel > 0.06) angleVel = 0.06;
+            if(turningRight) angleVel += angleAcc;
+            if(turningLeft) angleVel -= angleAcc;
             if(accelerating && length(velocity) < 5*(1-frictionFactor)) accelerate();
             
             velocity.x *= (0.99-(frictionFactor*0.02));
@@ -85,7 +96,7 @@ class Car {
                 velocity.y *= 0.97;
             }
             for(int i = 0; i < CHECKPOINT_COUNT; i++) {
-                if(length(position - checkpoints[i]) < 20) {
+                if(length(position - checkpoints[i]) < 50) {
                     checkpointsPassed[i] = true;
                 }
             }

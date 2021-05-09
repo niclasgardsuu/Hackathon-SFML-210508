@@ -12,10 +12,10 @@ class Car {
         bool checkpointsPassed[CHECKPOINT_COUNT];
         int currentLap;
         sf::RectangleShape car; 
+        sf::Texture texture;
     public:
         Car(sf::Vector2f size, sf::Vector2f startPos) {
             car.setSize(size);
-            car.setFillColor(sf::Color::Blue);
             car.setOrigin(size.x/2,size.y/2);
             position = startPos;
             velocity = sf::Vector2f(0.f,0.f);
@@ -32,6 +32,7 @@ class Car {
             turningRight = false;
             turningLeft = false;
             braking = false;
+            texture.loadFromFile("./img/car.png");
         }
 
         void move() {
@@ -69,6 +70,14 @@ class Car {
             else if(direction == 'l') turningLeft = false;
         }
 
+        void setFrictionFactor(float factor) {
+            frictionFactor = factor;
+        } 
+
+        sf::Vector2f getPos() {
+            return position;
+        }
+
         float length(sf::Vector2f vector) {
             return sqrt(pow(vector.x,2) + pow(vector.y,2));
         }
@@ -85,7 +94,7 @@ class Car {
                 velocity.y *= 0.97;
             }
             for(int i = 0; i < CHECKPOINT_COUNT; i++) {
-                if(length(position - checkpoints[i]) < 20) {
+                if(length(position - checkpoints[i]) < 50) {
                     checkpointsPassed[i] = true;
                 }
             }
@@ -94,7 +103,7 @@ class Car {
                 allCheckpoints += !checkpointsPassed[i];
             }
             if(!allCheckpoints) {
-                if(length(position - finishLine) < 25) {
+                if(length(position - finishLine) < 50) {
                     for(int i = 0; i < CHECKPOINT_COUNT; i++) {
                         checkpointsPassed[i] = false;
                     }
@@ -112,13 +121,32 @@ class Car {
         }
 
         void render(sf::RenderWindow &window) {
+            sf::CircleShape shadow;
+            shadow.setRadius(18);
+            shadow.setOrigin(18,18);
+            shadow.setFillColor(sf::Color(0,0,0,90));
+            shadow.setPosition(position);
+            window.draw(shadow);
             car.setPosition(position);
+            car.setTexture(&texture);
             car.setRotation((angle*180/PI)+90);
             window.draw(car);
-            sf::Vector2f newPos = position;
-            newPos.x += cos(angle)*10;
-            newPos.y += sin(angle)*10;
-            car.setPosition(newPos);
-            window.draw(car);
+
+            sf::CircleShape checkpointShape;
+            checkpointShape.setRadius(10);
+            for(int i = 0; i < CHECKPOINT_COUNT; i++) {
+                checkpointShape.setPosition(sf::Vector2f(i*25,0));
+                if(checkpointsPassed[i]) checkpointShape.setFillColor(sf::Color(50,200,50));
+                else checkpointShape.setFillColor(sf::Color(90,90,90));
+                window.draw(checkpointShape);
+            }
+            
+            sf::CircleShape lapShape;
+            lapShape.setRadius(5);
+            lapShape.setFillColor(sf::Color(120,100,20));
+            for(int i = 0; i < currentLap; i++) {
+                lapShape.setPosition(sf::Vector2f(i*12 + 4*25,0));
+                window.draw(lapShape);
+            }
         }
 };

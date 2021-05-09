@@ -5,6 +5,7 @@
 #define PI 3.14159265
 #define POINTS 100
 #define OFFSET_FACTOR 50
+#define TRACK_WIDTH 50
 #define CHECKPOINT_COUNT 4
 
 class Track {
@@ -112,6 +113,12 @@ class Track {
             return finishLine;
         }
 
+        float getGroundFriction(sf::Vector2f pos) {
+            for(int i = 0; i < POINTS; i++) {
+                if(length(pos - trackPoints[i]) < TRACK_WIDTH) return 0;
+            }
+            return 0.3;
+        }
 
         void render(sf::RenderWindow &window) {
             sf::CircleShape point;
@@ -119,28 +126,46 @@ class Track {
             //road blocks
             sf::Color color(25,25,25);
             point.setFillColor(color);
-            point.setRadius(50);
+            point.setRadius(TRACK_WIDTH);
             point.setOrigin(sf::Vector2f(point.getRadius(),point.getRadius()));
             for(int i = 0; i < POINTS; i++) {
                 point.setPosition(trackPoints[i]);
                 window.draw(point);
             }
+
+            //white marks;
+            sf::RectangleShape mark;
+            mark.setFillColor(sf::Color::White);
+            mark.setSize(sf::Vector2f(5,20));
+            mark.setOrigin(10,2.5);
+            for(int i = 3; i < POINTS-3; i+=3) {
+                float angle = atan((trackPoints[i-2].y - trackPoints[i+2].y)/(trackPoints[i-2].x - trackPoints[i+2].x));
+                mark.setRotation(angle*180/PI + 90);
+                mark.setPosition(trackPoints[i]);
+                window.draw(mark);
+            }
+
             //checkpoints
             sf::Color color2(90,90,25);
-            point.setFillColor(color2);
-            point.setRadius(15);
-            point.setOrigin(sf::Vector2f(point.getRadius(),point.getRadius()));
+            sf::RectangleShape checkpointBar;
+            checkpointBar.setSize(sf::Vector2f(10,TRACK_WIDTH*2 + 20));
+            checkpointBar.setOrigin(5,TRACK_WIDTH + 10);
+            checkpointBar.setFillColor(color2);
             for(int i = 0; i < CHECKPOINT_COUNT; i++) {
-                point.setPosition(checkpoints[i]);
-                window.draw(point);
+                checkpointBar.setPosition(checkpoints[i]);
+                checkpointBar.setRotation(180*atan((checkpoints[i].y - window.getSize().y/2)/(checkpoints[i].x - window.getSize().x/2))/PI + 90);
+                window.draw(checkpointBar);
             }
             //finish
-            sf::Color color3(200,90,25);
-            point.setFillColor(color3);
-            point.setRadius(15);
-            point.setOrigin(sf::Vector2f(point.getRadius(),point.getRadius()));
-            point.setPosition(finishLine);
-            window.draw(point);
+            sf::Color color3(200,170,25);
+            sf::RectangleShape finishBar;
+            finishBar.setSize(sf::Vector2f(10,TRACK_WIDTH*2 + 20));
+            finishBar.setOrigin(5,TRACK_WIDTH + 10);
+            finishBar.setFillColor(color3);
+            finishBar.setPosition(finishLine);
+            finishBar.setRotation(180*atan((finishLine.y - window.getSize().y/2)/(finishLine.x - window.getSize().x/2))/PI + 90);
+            window.draw(finishBar);
+            
 
         }
 

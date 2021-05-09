@@ -10,11 +10,15 @@ int main()
     window.setFramerateLimit(60);
     Track track(window);
     sf::RectangleShape background;
-    background.setFillColor(sf::Color(15,125,30));
+    background.setFillColor(sf::Color(120,190,150));
+    sf::Texture grass;
+    grass.loadFromFile("./img/grass.png");
+    background.setTexture(&grass);
     background.setPosition(0,0);
     background.setSize(sf::Vector2f((float)window.getSize().x,(float)window.getSize().y));
-    Car car(sf::Vector2f(10,20), sf::Vector2f(750,450));
-    EnemyCar enemy(sf::Vector2f(10,20), sf::Vector2f(200,750));
+    Car car(sf::Vector2f(20,35), sf::Vector2f(750,450));
+    EnemyCar enemy(sf::Vector2f(20,35), sf::Vector2f(750,450), 1);
+    EnemyCar enemyyes(sf::Vector2f(20,35), sf::Vector2f(750,420), 2);
 
     while (window.isOpen())
     {
@@ -53,14 +57,21 @@ int main()
             checkpointsIndex[i] = track.getCheckpointIndex(i);
         }
         enemy.setTarget(track.getTrackPoint(enemy.decideTargetIndex(window,checkpoints,checkpointsIndex)));
+        enemyyes.setTarget(track.getTrackPoint(enemyyes.decideTargetIndex(window,checkpoints,checkpointsIndex)));
         enemy.configureActions();
+        enemyyes.configureActions();
+        car.setFrictionFactor(track.getGroundFriction(car.getPos()));
+        enemy.setFrictionFactor(track.getGroundFriction(enemy.getPos()));
+        enemyyes.setFrictionFactor(track.getGroundFriction(enemyyes.getPos()));
         car.update(checkpoints, track.getFinishPoint());
         enemy.update(checkpoints, track.getFinishPoint());
+        enemyyes.update(checkpoints, track.getFinishPoint());
 
         window.draw(background);
         track.render(window);
         car.render(window);
         enemy.render(window);
+        enemyyes.render(window);
         window.display();
     }
 

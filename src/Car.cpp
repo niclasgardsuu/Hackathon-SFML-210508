@@ -1,3 +1,6 @@
+#ifndef CAR_CPP
+#define CAR_CPP
+
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <cstdlib>
@@ -11,7 +14,7 @@ class Car {
         float angle, angleVel, angleAcc, frictionFactor;
         bool checkpointsPassed[CHECKPOINT_COUNT];
         int currentLap;
-        sf::RectangleShape car; 
+        sf::RectangleShape car;
         sf::Texture texture;
     public:
         Car(sf::Vector2f size, sf::Vector2f startPos) {
@@ -83,6 +86,8 @@ class Car {
         }
 
         void update(sf::Vector2f checkpoints[CHECKPOINT_COUNT], sf::Vector2f finishLine) {
+            if(angleVel < -0.06) angleVel = -0.06;
+            if(angleVel > 0.06) angleVel = 0.06;
             if(turningRight && std::abs(angleVel) < 0.06) angleVel += angleAcc;
             if(turningLeft && std::abs(angleVel) < 0.06) angleVel -= angleAcc;
             if(accelerating && length(velocity) < 5*(1-frictionFactor)) accelerate();
@@ -150,3 +155,5 @@ class Car {
             }
         }
 };
+
+#endif

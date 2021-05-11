@@ -17,8 +17,12 @@ int main()
     background.setPosition(0,0);
     background.setSize(sf::Vector2f((float)window.getSize().x,(float)window.getSize().y));
     Car car(sf::Vector2f(20,35), sf::Vector2f(750,450));
-    EnemyCar enemy(sf::Vector2f(20,35), sf::Vector2f(750,450), 1);
-    EnemyCar enemyyes(sf::Vector2f(20,35), sf::Vector2f(750,420), 2);
+    EnemyCar enemies[5] = {EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 1),
+                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 2),
+                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 3),
+                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 4),
+                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 5)
+                           };
 
     while (window.isOpen())
     {
@@ -56,22 +60,23 @@ int main()
             checkpoints[i] = track.getCheckpoint(i);
             checkpointsIndex[i] = track.getCheckpointIndex(i);
         }
-        enemy.setTarget(track.getTrackPoint(enemy.decideTargetIndex(window,checkpoints,checkpointsIndex)));
-        enemyyes.setTarget(track.getTrackPoint(enemyyes.decideTargetIndex(window,checkpoints,checkpointsIndex)));
-        enemy.configureActions();
-        enemyyes.configureActions();
+        for(int i = 0; i < 5; i++) {
+            enemies[i].setTarget(track.getTrackPoint(enemies[i].decideTargetIndex(window,checkpoints,checkpointsIndex)));
+            enemies[i].configureActions();
+            enemies[i].setFrictionFactor(track.getGroundFriction(enemies[i].getPos()));
+            enemies[i].update(checkpoints, track.getFinishPoint());
+        }
+
         car.setFrictionFactor(track.getGroundFriction(car.getPos()));
-        enemy.setFrictionFactor(track.getGroundFriction(enemy.getPos()));
-        enemyyes.setFrictionFactor(track.getGroundFriction(enemyyes.getPos()));
         car.update(checkpoints, track.getFinishPoint());
-        enemy.update(checkpoints, track.getFinishPoint());
-        enemyyes.update(checkpoints, track.getFinishPoint());
+
 
         window.draw(background);
         track.render(window);
         car.render(window);
-        enemy.render(window);
-        enemyyes.render(window);
+        for(int i = 0; i < 5; i++) {
+            enemies[i].render(window);
+        }
         window.display();
     }
 

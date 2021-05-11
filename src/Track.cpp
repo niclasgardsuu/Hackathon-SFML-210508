@@ -122,7 +122,6 @@ class Track {
 
         void render(sf::RenderWindow &window) {
             sf::CircleShape point;
-
             //road blocks
             sf::Color color(25,25,25);
             point.setFillColor(color);

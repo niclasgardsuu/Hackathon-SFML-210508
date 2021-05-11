@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include <../src/CarYes.cpp>
+#include <../src/Car.cpp>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -7,13 +7,13 @@
 #define POINTS 100
 #define CHECKPOINT_COUNT 4
 
-class EnemyCar : public CarYes {
+class EnemyCar : public Car {
     private: 
         sf::Vector2f target;
         int index;
         sf::Texture texture;
     public:
-        EnemyCar(sf::Vector2f size, sf::Vector2f startPos, int enemyIndex) : CarYes(size,startPos) {
+        EnemyCar(sf::Vector2f size, sf::Vector2f startPos, int enemyIndex) : Car(size,startPos) {
             target = startPos;
             index = enemyIndex;
             texture.loadFromFile("./img/AIcar.png");
@@ -106,13 +106,6 @@ class EnemyCar : public CarYes {
             } else {
                 velRightoptimalAngle = optimalAngle + (2*PI - velocityAngle);
             }
-
-            std::cout << "\nsum angles: ";
-            std::cout << velRightoptimalAngle;
-            std::cout << " ";
-            std::cout << velLeftoptimalAngle;
-            std::cout << "\n";
-
             if(velRightoptimalAngle > 0.9 && velLeftoptimalAngle > 0.9 && length(velocity) > 3.5) {
                 startBrake();
                 stopAcc();

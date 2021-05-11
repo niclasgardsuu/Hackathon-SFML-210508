@@ -61,10 +61,10 @@ class EnemyCar : public Car {
             else if(posToTarget.x < 0) angleToTarget += PI;
             else if(posToTarget.y < 0) angleToTarget += 2*PI;
 
-            if(angle < 0)
+            /*if(angle < 0)
                 angle = 2*PI - fmod(angle,2*PI);
             else
-                angle = fmod(angle,2*PI);
+                angle = fmod(angle,2*PI);*/
                 
 
             float velocityAngle = atan(velocity.y/velocity.x);

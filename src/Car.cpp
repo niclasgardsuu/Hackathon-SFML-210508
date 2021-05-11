@@ -85,7 +85,52 @@ class Car {
             return sqrt(pow(vector.x,2) + pow(vector.y,2));
         }
 
+        void skid(sf::RenderTexture &surface) {
+            if(1) {//length(velocity) > 1) {
+                sf::CircleShape skid;
+                float skidRadius = car.getSize().x/5;
+                skid.setRadius(skidRadius);
+                skid.setOrigin(skidRadius,skidRadius);
+        
+                sf::Vector2f carSize = car.getSize();
+                sf::Vector2f carCorners[4] = { //[0] topleft, [1] topright, [2] downleft, [3] downright
+                    sf::Vector2f(position.x + (carSize.y/2.4)*sin(angle - (PI/2)) + (carSize.x/2.4)*sin(angle), 900-position.y + (carSize.y/2.4)*cos(angle - (PI/2)) + (carSize.x/2.4)*cos(angle)),
+                    sf::Vector2f(position.x + (carSize.y/2.4)*sin(angle - (PI/2)) - (carSize.x/2.4)*sin(angle), 900-position.y + (carSize.y/2.4)*cos(angle - (PI/2)) - (carSize.x/2.4)*cos(angle)),
+                    sf::Vector2f(position.x + -1*(carSize.y/2.4)*sin(angle - (PI/2)) + (carSize.x/2.4)*sin(angle), 900-position.y + -1*(carSize.y/2.4)*cos(angle - (PI/2)) + (carSize.x/2.4)*cos(angle)),
+                    sf::Vector2f(position.x + -1*(carSize.y/2.4)*sin(angle - (PI/2)) - (carSize.x/2.4)*sin(angle), 900-position.y + -1*(carSize.y/2.4)*cos(angle - (PI/2)) - (carSize.x/2.4)*cos(angle))
+                };
+
+                
+                float velocityAngle = atan(velocity.y/velocity.x);
+                if(velocity.x < 0 && velocity.y < 0) velocityAngle += PI;
+                else if(velocity.x < 0) velocityAngle += PI;
+                else if(velocity.y < 0) velocityAngle += 2*PI;
+
+                float angleDifference = fmod((velocityAngle - angle) + 2*PI, 2*PI);
+                if(angleDifference > PI) angleDifference = (2*PI) - angleDifference;
+                std::cout << angleDifference;
+                std::cout << "\n";
+                double skidOpacity = (1 - fabs((angleDifference / (PI/2.f))-1)) / 2.f;
+                std::cout << abs(-1.3337f);
+                std::cout << "\n";
+                std::cout << skidOpacity;
+                std::cout << "\n";
+                std::cout << "\n";
+                std::cout << "\n";
+                skid.setFillColor(sf::Color(0,0,0,skidOpacity * 200 * (length(velocity)/5)));
+                for(int i = 0; i < 4; i++) {
+                    skid.setPosition(carCorners[i]);
+                    surface.draw(skid);
+                }
+            }
+        }
+
         void update(sf::Vector2f checkpoints[CHECKPOINT_COUNT], sf::Vector2f finishLine) {
+            if(angle < 0)
+                angle = 2*PI - fmod(angle,2*PI);
+            else
+                angle = fmod(angle,2*PI);
+            
             if(angleVel < -0.06) angleVel = -0.06;
             if(angleVel > 0.06) angleVel = 0.06;
             if(turningRight && std::abs(angleVel) < 0.06) angleVel += angleAcc;

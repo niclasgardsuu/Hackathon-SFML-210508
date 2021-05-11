@@ -4,6 +4,8 @@
 #include <../src/EnemyCar.cpp>
 #include <iostream>
 
+#define ENEMY_COUNT 5
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(900,900), "RaceFever!");
@@ -17,12 +19,15 @@ int main()
     background.setPosition(0,0);
     background.setSize(sf::Vector2f((float)window.getSize().x,(float)window.getSize().y));
     Car car(sf::Vector2f(20,35), sf::Vector2f(750,450));
-    EnemyCar enemies[5] = {EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 1),
-                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 2),
-                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 3),
-                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 4),
-                           EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 5)
-                           };
+    EnemyCar enemies[ENEMY_COUNT] = {
+        EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 1),
+        EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 2),
+        EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 3),
+        EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 4),
+        EnemyCar(sf::Vector2f(20,35), sf::Vector2f(700+(rand()%50),400+(rand()%50)), 5)
+    };
+    sf::RenderTexture skidSurface;
+    skidSurface.create(900,900);
 
     while (window.isOpen())
     {
@@ -60,25 +65,33 @@ int main()
             checkpoints[i] = track.getCheckpoint(i);
             checkpointsIndex[i] = track.getCheckpointIndex(i);
         }
-        for(int i = 0; i < 5; i++) {
+        
+        for(int i = 0; i < ENEMY_COUNT; i++) {
             enemies[i].setTarget(track.getTrackPoint(enemies[i].decideTargetIndex(window,checkpoints,checkpointsIndex)));
             enemies[i].configureActions();
             enemies[i].setFrictionFactor(track.getGroundFriction(enemies[i].getPos()));
             enemies[i].update(checkpoints, track.getFinishPoint());
+            enemies[i].skid(skidSurface);
         }
+        
 
         car.setFrictionFactor(track.getGroundFriction(car.getPos()));
         car.update(checkpoints, track.getFinishPoint());
-
+        car.skid(skidSurface);
 
         window.draw(background);
         track.render(window);
+        const sf::Texture &skid = skidSurface.getTexture();
+        sf::Sprite skidd(skid);
+        window.draw(skidd);
         car.render(window);
-        for(int i = 0; i < 5; i++) {
+        
+        for(int i = 0; i < ENEMY_COUNT; i++) {
             enemies[i].render(window);
         }
+        
         window.display();
     }
-
+    delete enemies;
     return 0;
 }
